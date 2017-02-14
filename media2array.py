@@ -57,9 +57,25 @@ def convertImage(filename):
       hex    = HexTable(((im.size[0] + 7) / 8) * im.size[1], 12, 2)
 
       sys.stderr.write("Image OK\n")
-      sys.stdout.write("const uint8_t PROGMEM %sBitmap[] = {" % (prefix))
+      sys.stdout.write(
+        "#define %sWidth  %d\n"
+        "#define %sHeight %d\n"
+        "const uint8_t PROGMEM %sBitmap[] = {" %
+        (prefix, im.size[0], prefix, im.size[1], prefix))
 
-      # DO MAGIG HERE
+      for y in range(im.size[1]):
+        bits = 0
+        sum  = 0
+        for x in range(im.size[0]):
+          p     = 1 if pixels[x, y] > 0 else 0
+          sum   = (sum << 1) + p
+          bits += 1
+          if bits >= 8:
+            hex.write(sum)
+            bits = 0
+            sum  = 0
+        if bits > 0: # Scanline pad if not a multiple of 8
+          hex.write(sum)
 
       return 0 # Bitmap image; no gamma tables needed
 
@@ -75,7 +91,7 @@ def convertImage(filename):
 
       sys.stderr.write("Image OK\n")
       sys.stdout.write(
-        "#define %sFPS 30\n\n"
+        "#define %sFPS 30\n"
         "const uint16_t PROGMEM %sPixelData[] = {" %
         (prefix, prefix))
 
