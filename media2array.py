@@ -5,7 +5,7 @@
 
 import sys
 import math
-from PIL import Image
+from PIL import Image   # install with `pip install pillow`
 from os import path
 
 
@@ -32,7 +32,7 @@ class HexTable:
     if self.hexColumn >= self.hexColumns:        # Max column exceeded?
       sys.stdout.write("\n  ")                   # Line wrap, indent
       self.hexColumn = 0                         # Reset column number
-    sys.stdout.write("{0:#0{1}X}".format(n, self.hexDigits + 2))
+    sys.stdout.write("{0:#0{1}x}".format(n, self.hexDigits + 2))
     self.hexCounter += 1                         # Increment item counter
     if self.hexCounter >= self.hexLimit: print(" };\n"); # Cap off table
 
@@ -54,7 +54,7 @@ def convertImage(filename):
 
       # BITMAP IMAGE
       pixels = im.load()
-      hex    = HexTable(((im.size[0] + 7) / 8) * im.size[1], 12, 2)
+      hex    = HexTable(((im.size[0] + 7) // 8) * im.size[1], 12, 2)
 
       sys.stderr.write("Image OK\n")
       sys.stdout.write(
@@ -121,14 +121,15 @@ reduce16 = 8 # 16-bit audio reduction, MUST be 8 or 10
 def uvalue(bytes):
   result = 0
   for i, b in enumerate(bytes):
-    result += ord(b) << (i * 8)
+    result += b << (i * 8)
   return result
 
 def convertWav(filename):
   try:
     bytes = open(filename, "rb").read()
-    assert bytes[0:4] == "RIFF" and bytes[8:16] == "WAVEfmt "
 
+    assert bytes[0:4] == b'RIFF' and bytes[8:16] == b'WAVEfmt '
+    
     prefix     = path.splitext(path.split(filename)[1])[0]
     chunksize  = uvalue(bytes[16:20])
     channels   = uvalue(bytes[22:24])
@@ -136,7 +137,7 @@ def convertWav(filename):
     bytesPer   = uvalue(bytes[32:34])
     bitsPer    = uvalue(bytes[34:36])
     bytesTotal = uvalue(bytes[chunksize + 24:chunksize + 28])
-    samples    = bytesTotal / bytesPer
+    samples    = bytesTotal // bytesPer
     index_in   = chunksize + 28
     buf        = [0] * 5
     bufIdx     = 1
@@ -156,7 +157,7 @@ def convertWav(filename):
       if reduce16 == 10:
         div = channels *  64
         # 5 bytes per 4 samples (pad to multiple of 4)
-        hex = HexTable(5 * ((samples + 3) / 4), 12, 2)
+        hex = HexTable(5 * ((samples + 3) // 4), 12, 2)
       else:
         div = channels * 256
         hex = HexTable(samples, 12, 2)
@@ -169,20 +170,20 @@ def convertWav(filename):
       for c in range(channels):
         if bitsPer == 8:
           # 8-bit data is UNSIGNED
-          sum      += ord(bytes[index_in])
+          sum      += bytes[index_in]
           index_in += 1
         elif bitsPer == 16:
           # 16-bit data is SIGNED, requires
           # conversion from unsigned 8-bit src
-          x = (ord(bytes[index_in]) +
-              (ord(bytes[index_in + 1]) << 8))
+          x = (bytes[index_in] +
+              (bytes[index_in + 1] << 8))
           if x & 0x8000: x -= 32768
           else:          x += 32768
           sum      += x
           index_in += 2
 
       if (bitsPer == 16) and (reduce16 == 10):
-        sum /= div
+        sum //= div
         buf[0]      = (buf[0] << 2) | (sum >> 8)
         buf[bufIdx] = sum & 0xFF
         bufIdx += 1
@@ -191,7 +192,7 @@ def convertWav(filename):
           buf = [0] * 5
           bufIdx = 1
       else:
-        hex.write(sum / div)
+        hex.write(sum // div)
 
     if (bitsPer == 16) and (reduce16 == 10) and (bufIdx > 1):
       for b in buf: hex.write(b)
@@ -199,8 +200,6 @@ def convertWav(filename):
     return 1 # Success
   except AssertionError:
     sys.stderr.write("Not a WAV file\n")
-  except:
-    sys.stderr.write("Can't open\n")
 
   return -1 # Fail
 
