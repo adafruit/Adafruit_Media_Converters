@@ -1,5 +1,8 @@
 #!/usr/bin/python
 
+# SPDX-FileCopyrightText: 2021 P Burgess for Adafruit Industries
+# SPDX-License-Identifier: MIT
+
 # THIS IS A QUICKLY KLUDGED VERSION OF MEDIA2ARRAY.PY with a couple
 # tweaks to generate a .h file for the FunHouse boot screen. Should
 # either be cleaned up to specifically do that task (and not, like,
