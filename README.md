@@ -1,7 +1,7 @@
 # media2array
-Python 3 script for converting bitmaps, images and WAVs to Arduino PROGMEM arrays.
+Python 3 scripts for converting bitmaps, images and WAVs to Arduino PROGMEM arrays.
 
-Don't forget to install PIL with `pip3 install pillow`
+Remember to install PIL with `pip3 install pillow`
 
 - Bitmap images for Adafruit_GFX drawBitmap() function.
 - Image to NeoPixel data for animation.
