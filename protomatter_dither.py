@@ -1,7 +1,10 @@
+# SPDX-FileCopyrightText: 2020 P Burgess for Adafruit Industries
+# SPDX-License-Identifier: MIT
+
 """
 This script modifies one or more images to provide gamma correciton
 and error-diffusion dithering so they'll look a little better with the
-Protomatter matrix library, which initially does not support gamma
+Protomatter matrix library, which currently does not support gamma
 correction on its own.
 
 Requires PIL/Pillow
