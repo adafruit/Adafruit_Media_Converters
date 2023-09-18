@@ -1,5 +1,8 @@
 #!/usr/bin/python
 
+# SPDX-FileCopyrightText: 2020 P Burgess for Adafruit Industries
+# SPDX-License-Identifier: MIT
+
 # Image and sound converter -- generates PROGMEM arrays for Arduino sketches
 # from WAV files and common image formats.  Requires PIL or Pillow library.
 
